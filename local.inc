@@ -385,7 +385,7 @@ y20 ...
 		"\n_refine_ls_goodness_of_fit_all  %.3f" =Get(gof);
 	}
 	Out_String("
-_refine_ls_R_I_factor ? #EDIT! This is r_bragg*100
+_refine_ls_R_I_factor ? #EDIT! This is r_bragg/100
 ")
 
 	
