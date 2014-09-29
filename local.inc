@@ -240,7 +240,7 @@ macro Out_CIF_IUCR(file, myname)
 	  Out(Lam, "\n_diffrn_radiation_wavelength %V\n")
       Out(Get(sp_grp_char), "\n#Copy full symmetry info from PLATON\n_symmetry_space_group_name_H-M %s")
 load out_record out_fmt out_eqn {
-"\n_exptl_crystal_density_method\n;\nNot Measured\n;\n_exptl_crystal_density_diffrn   %.3f" =Phase_Density_Eqn_g_on_cm3;
+"\n_exptl_crystal_density_diffrn   %.3f" =Phase_Density_Eqn_g_on_cm3;
 "\n_exptl_absorpt_coefficient_mu %.3f" =Phase_LAC_Eqn_1_on_cm/10;
 }
 	Out_String("\n_exptl_crystal_F_000     ? #PLATON")
@@ -248,8 +248,6 @@ load out_record out_fmt out_eqn {
       Out(Get(sp_xyzs_txt),  "%s")
 	  
 	  Out_String("
-_exptl_crystal_density_meas_temp                  ?
-_exptl_crystal_density_meas                       ?
 
  _cell_measurement_temperature 298
 
