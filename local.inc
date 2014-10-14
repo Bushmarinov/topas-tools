@@ -223,7 +223,9 @@ macro Out_CIF_IUCR(file, myname)
    out file
 	  Out_String("\ndata_")
 	  Out_String(myname)
-      Out(Get(phase_name), "\n_chemical_name_mineral \n;\n%s\n;\n")
+      Out_String("\n_chemical_name_mineral ")
+	  Out_String(myname)
+	  Out_String("\n")
 	  Out_String("#Copy this section from PLATON")
 	  Out_String("
 #===============================================================================
@@ -244,7 +246,7 @@ load out_record out_fmt out_eqn {
 "\n_exptl_absorpt_coefficient_mu %.3f" =Phase_LAC_Eqn_1_on_cm/10;
 }
 	Out_String("\n_exptl_crystal_F_000     ? #PLATON")
-      Out_String("\n\n\nloop_       #REPLACE with PLATON (i.e. canonical) output to make tables correct\n_symmetry_equiv_pos_as_xyz")
+      Out_String("\n\n       #REPLACE with PLATON (i.e. canonical) output to make tables correct\nloop_\n_symmetry_equiv_pos_as_xyz")
       Out(Get(sp_xyzs_txt),  "%s")
 	  
 	  Out_String("
