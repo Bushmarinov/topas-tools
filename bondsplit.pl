@@ -170,10 +170,14 @@ foreach my $file (@files) {
         my $patt = Chemistry::Pattern->parse($patt_str, format => 'smiles');
         die "Not found acid!" unless $patt->match($mol);
         my @atoms = $patt->atom_map;
+        my @bonds = $patt->bond_map;
+        # say join "\t", map {sprintf '%.3f', $_->length} @bonds;
         my %entry;     # hash to output in report
         @{$entry{q}}{qw/H O1 C O2/} = map {$_->attr('bader/q')} @atoms[0..3];
         $entry{q}{CH3} = sum map {$_->attr('bader/q')} @atoms[4..7];
         $entry{energy} = $mol->attr('wfn/energy');
+        $entry{'O-H'}{len} = $bonds[0]->length;
+        $entry{'CO'}{len} = $bonds[2]->length;
         $COOH_report{$calc_name}{$subkey} //= {};
         $COOH_report{$calc_name}{$subkey} = {%{$COOH_report{$calc_name}{$subkey}}, %entry};
         # say join "\t", $_->id, $_->attr('bader/q');
@@ -184,7 +188,7 @@ foreach my $file (@files) {
 if ($mode =~ /cooh/) {
     open my $reporth, '>report.txt';
     
-    my @headers = qw/energy q_H q_O1 q_C q_O2 q_CH3 hbond_Rho hbond_Econt Econt-total/;
+    my @headers = qw/energy q_H q_O1 q_C q_O2 q_CH3 O-H_len CO_len hbond_Rho hbond_Econt Econt-total/;
     say $reporth join "\t", 'Name', (map {"0_$_"} @headers), (map {"180_$_"} @headers);
     foreach my $calcname (sort keys %COOH_report) {
         my @line;
