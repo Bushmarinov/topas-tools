@@ -30,8 +30,8 @@ if (length(arguments$args) != 1)
 toparun <- read.table(arguments$args, sep="\t", header=T)
 
 ## Generate plot object
-p <- ggplot(data=toparun, aes(x=(Upper-Lower), color = Name, group=Name)) +
-    geom_density(alpha=.2) + theme_bw()
+p <- ggplot(data=toparun, aes(x=(Upper-Lower)/2, color = Name, group=Name)) +
+    geom_density(alpha=.2) + theme_bw() + xlab("HUW")
 
 ## Modify if fill=TRUE
 if (opt$fill) {p <- p + aes(fill = Name)}
