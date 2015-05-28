@@ -14,15 +14,15 @@ option_list <- list(
                 help="Fill density plot, [default %default]")
     )
 
-parser    <- OptionParser(usage = "molten_toparun_plotter.r [options] data.txt\n\n were data.txt is the output of melt_toparun.pl", option_list=option_list)
+parser    <- OptionParser(usage = "molten_toparun_plotter.r [options] data.txt\n were data.txt is the output of melt_toparun.pl", option_list=option_list)
 arguments <- parse_args(parser, positional_arguments = TRUE)
 opt       <- arguments$options
 
-if (length(arguments$args) != 1)
+larg <- length(arguments$args)
+if (larg != 1)
 {
-    print("Wrong number of arguments")
     print_help(parser)
-    stop()
+    stop(paste("Wrong number of arguments (", larg, " for 1)", sep=""))
 }
 
 
