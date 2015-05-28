@@ -72,7 +72,7 @@ my @files = map { glob $_ } @ARGV;
 my $opensymb = '>';
 $opensymb = '>>' if $append;
 open my $weakh, $opensymb, 'weakbonds.txt';
-say $weakh join "\t", qw/File Atom1 Atom2 Length Rho DelSqRho V G K Ellipticity Econt/ unless $append;
+say $weakh join "\t", qw/File Atom1 Atom2 Length Rho DelSqRho V G K Ellipticity Econt hbond_A...B/ unless $append;
 open my $fragsh, $opensymb, 'frags.txt'; 
 
 my %COOH_report;
@@ -101,6 +101,14 @@ foreach my $file (@files) {
             next if @bonds <= 1;
             @bonds = sort {$a->length <=> $b->length} @bonds;
             push @weak_bonds, @bonds[1..$#bonds];
+            if (@bonds == 2) {
+                my @hbond_heavy = grep {$_->symbol !~ /^[H|D|T]$/} map {$_->atoms} @bonds;
+                # say Dump(\@hbond_heavy);
+                # die "What!";
+                if (@hbond_heavy == 2) {        #this bond is a "normal" hbond. Possibly need a case for bifurcates
+                    $bonds[1]->attr("hbond/length", $hbond_heavy[0]->distance($hbond_heavy[1]));
+                }
+            }
         }
     }
     if ($findc) {
@@ -133,7 +141,9 @@ foreach my $file (@files) {
         my $hbond = $weak_bonds[0];
         $entry{hbond}{Rho} = $hbond ? $hbond->attr('bader/Rho') : 0;
         $entry{hbond}{Econt} = $hbond ? $hbond->attr('bader/Econt') : 0;
+        $entry{hbond}{'AB-length'} = $hbond ? $hbond->attr('hbond/length') || 'NA' : 0;
         $entry{'Econt-total'} = $hbond ? sum map {$_->attr('bader/Econt')} @weak_bonds : 0;
+        $entry{'Rho-total'} = $hbond ? sum map {$_->attr('bader/Rho')} @weak_bonds : 0;
         $COOH_report{$calc_name}{$subkey} //= {};
         $COOH_report{$calc_name}{$subkey} = {%{$COOH_report{$calc_name}{$subkey}}, %entry};
     }
@@ -148,7 +158,8 @@ foreach my $file (@files) {
             $weak->attr('bader/G'),
             $weak->attr('bader/K'),
             $weak->attr('bader/Bond Ellipticity'),
-            $weak->attr('bader/Econt');
+            $weak->attr('bader/Econt'),
+            $weak->attr('hbond/length') || 'NA';
         $mol->delete_bond($weak);
     }
     # find_bonds($mol, tolerance => $scale_cutoff);
@@ -176,6 +187,7 @@ foreach my $file (@files) {
         @{$entry{q}}{qw/H O1 C O2/} = map {$_->attr('bader/q')} @atoms[0..3];
         $entry{q}{CH3} = sum map {$_->attr('bader/q')} @atoms[4..7];
         $entry{energy} = $mol->attr('wfn/energy');
+        $entry{q}{total} = sum map {$_->attr('bader/q')} $mol->atoms;
         $entry{'O-H'}{len} = $bonds[0]->length;
         $entry{'CO'}{len} = $bonds[2]->length;
         $COOH_report{$calc_name}{$subkey} //= {};
@@ -188,8 +200,8 @@ foreach my $file (@files) {
 if ($mode =~ /cooh/) {
     open my $reporth, '>report.txt';
     
-    my @headers = qw/energy q_H q_O1 q_C q_O2 q_CH3 O-H_len CO_len hbond_Rho hbond_Econt Econt-total/;
-    say $reporth join "\t", 'Name', (map {"0_$_"} @headers), (map {"180_$_"} @headers);
+    my @headers = qw/energy q_H q_O1 q_C q_O2 q_CH3 q_total O-H_len CO_len hbond_Rho hbond_Econt hbond_AB-length Econt-total Rho-total/;
+    say $reporth join "\t", 'Name', (map {"0_$_"} @headers), (map {"180_$_"} @headers), "Remark";
     foreach my $calcname (sort keys %COOH_report) {
         my @line;
         push @line, $calcname;
@@ -201,9 +213,39 @@ if ($mode =~ /cooh/) {
                 push @line, $record;
             }
         }
+        push @line, '';
         say $reporth join "\t", @line;
+        @line = ($calcname);
+        if ($COOH_report{$calcname}{'180alt'}) {
+            foreach my $angle (0, '180alt') {
+                foreach my $header (@headers) {
+                    my @hierarchy = split /_/, $header;
+                    my $record = $COOH_report{$calcname}{$angle};
+                    $record = $record->{$_} foreach @hierarchy;  # process subkeys of any depth
+                    push @line, $record;
+                }
+            }
+            push @line, '180alt';
+            say $reporth join "\t", @line;
+            @line = ($calcname);
+        }
+        if ($COOH_report{$calcname}{'0alt'}) {
+            foreach my $angle ('0alt', 180) {
+                foreach my $header (@headers) {
+                    my @hierarchy = split /_/, $header;
+                    my $record = $COOH_report{$calcname}{$angle};
+                    $record = $record->{$_} foreach @hierarchy;  # process subkeys of any depth
+                    push @line, $record;
+                }
+            }
+            push @line, '0alt';            
+            say $reporth join "\t", @line;
+            @line = ($calcname);
+        }        
     }
+    say "Report written to report.txt";
 }
 
 
 say "Output written to frags.txt and weakbonds.txt";
+
