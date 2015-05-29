@@ -12,6 +12,8 @@ option_list <- list(
                 help="Height of the output image, cm [default %default]"),
 	make_option(c("-R", "--rows"), type="integer",default=1,
                 help="Number of rows in legend [default %default]"),
+	make_option(c("-b", "--brewer"), type="character",default="Set1",
+                help="ColorBrewer 2.0 pallette to use in brewer output [default %default]"),
     make_option(c("-f", "--fill"), action="store_true", default=FALSE,
                 help="Fill density plot, [default %default]"),
 	make_option(c("-l", "--linetype"), action="store_true", default=FALSE,
@@ -64,5 +66,5 @@ if (opt$rows > 1) {
 name = sub("[.].{2,3}","",arguments$args)
 # ggsave(p, file= paste(name, "_plot.pdf", sep = ""), width=opt$width, height=opt$height, units="cm")
 ggsave(p, file= paste(name, "_plot.eps", sep = ""), width=opt$width, height=opt$height, units="cm")
-ggsave(p +scale_colour_brewer(palette="Dark2") , file= paste(name, "_plot_brewer.eps", sep = ""), width=opt$width, height=opt$height, units="cm")
+ggsave(p +scale_colour_brewer(palette=opt$brewer) , file= paste(name, "_plot_brewer.eps", sep = ""), width=opt$width, height=opt$height, units="cm")
 # ggsave(p, file= paste(name, "_plot.png", sep = ""), width=opt$width, height=opt$height, units="cm")
