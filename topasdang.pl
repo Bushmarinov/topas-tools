@@ -28,5 +28,5 @@ if (/Distance_Restrain(?:_Morse|_Breakable)?\([^,]+,\s*([0-9.]+)\s*,\s*([0-9.]+)
 END {
 	printf "RMS |delta d|: %.4f\n", sqrt($msqd_d/$d_count);
     print "Total bonds: $d_count\n";
-	print "Max |delta d|: $max\n";
+	printf "Max |delta d|: %.5g\n", $max;
 }
