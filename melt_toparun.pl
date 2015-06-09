@@ -4,20 +4,33 @@ use Modern::Perl '2013';
 use autodie;
 use Text::CSV;
 use Getopt::Long;
+use YAML;
 
-my ($outfile, $help);
+my ($outfile, $help, $namesfile);
 
 GetOptions('outfile=s' => \$outfile,
            'help|h|?' => \$help,
+           'names=s' => \$namesfile,
            
            );
 die <<HELP if $help or !@ARGV;
-Usage: melt_toparun.pl [-o outfile] <dirnames>
+Usage: melt_toparun.pl [-o outfile] [-n names.yml] <dirnames>
 
 Prits out toparunning result from given directories in molten style.
 Accepts wildcards in dirnames even when shell does not (i.e. on Win32).
+
+names.yml allows renaming the folders to prettify output.
 HELP
 
+my %names;
+if ($namesfile) {
+    eval{
+        %names = %{YAML::LoadFile($namesfile)};
+    };
+    if ($@) {
+        warn "Something is wrong with namesfile '$namesfile': $@";
+    }
+}
 $outfile ||= 'molten_toparun.txt';
 $outfile .= '.txt' unless $outfile =~ /\./;
 @ARGV = grep {-d $_} map { glob $_ } @ARGV;
@@ -35,7 +48,7 @@ foreach my $dir (@ARGV) {
         $csv->column_names(map {lc $_} @{$csv->getline($tableh)});  #use lc'd headers and do not care about order
         ROW:
         while (my $row = $csv->getline_hr($tableh)) {
-            push @molten, [$dir, @$row{qw/bond ideal lower upper/}];
+            push @molten, [$names{$dir} || $dir, @$row{qw/bond ideal lower upper/}];
         }  
     };
     if ($@) {
