@@ -11,13 +11,22 @@ use YAML;
 use Getopt::Long;
 
 
-my ($namesfile, $outfile, $help);
+my ($namesfile, $outfile, $help, $exclude);
 GetOptions('outfile=s' => \$outfile,
            'help|h|?' => \$help,
            'names=s' => \$namesfile,
+           'exclude' => \$exclude,
            
            );
 
+           
+die <<HELP if $help;
+Usage: toparun_summary.pl [-o outfile] [-n names.yml] [-x]
+
+-n renames the folders in the resulting table 
+according to the provided hashref YAML file.
+-e excludes non-named entries
+HELP
 my %names;
 if ($namesfile) {
     eval{
@@ -30,7 +39,7 @@ if ($namesfile) {
 $outfile ||= 'summary.txt';
 $outfile .= '.txt' unless $outfile =~ /\./;
            
-my @par_list = qw/r_wp r_wp_dash r_p r_bragg gof penalties_weighting_K1/;
+my @par_list = qw/r_wp r_wp_dash r_p r_p_dash r_bragg gof penalties_weighting_K1/;
 my @par_regexes;
 
 foreach my $par (@par_list) {
@@ -44,7 +53,11 @@ $startdir = abs_path($startdir);
 chdir $startdir;
 
 opendir( my $startdirh, $startdir);
-foreach my $subdir (grep {-d "$startdir/$_"} readdir $startdirh) {
+foreach my $subdir (    
+                        grep {-d "$startdir/$_"} 
+                        readdir $startdirh
+                    ) 
+{
     opendir( my $subdirh, $subdir);
     # chdir $subdir;
     my @files = readdir $subdirh;
@@ -92,7 +105,10 @@ open my $summh, ">", $outfile;
 
 my @headers = (@par_list, qw/HUW_mean HUW_sd HUW_nice TI Total_bonds rms_delta_d min_rms_delta_d max_rms_delta_d/);
 say $summh join "\t", 'Name', @headers;
-say $summh join "\t", $names{$_} || $_, @{$summaries{$_}}{@headers} foreach sort keys %summaries;
+say $summh join "\t", $names{$_} || $_, @{$summaries{$_}}{@headers} 
+    foreach 
+    grep {$exclude ? $names{$_} : 1}            # only named are read if -e in effect
+    sort keys %summaries;
 
 
 sub get_properties {
