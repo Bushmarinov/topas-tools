@@ -9,14 +9,21 @@ use File::Copy qw(cp);
 use Cwd 'abs_path';
 use YAML;
 use Getopt::Long;
+use File::Spec;
+my $tc = $ENV{TOPAS_COMMANDLINE} || 'C:\Topas4-2\tc.exe';
+my $topasdir = $ENV{TOPAS_DIR} || 'C:\Topas4-2';
 
 
-my ($namesfile, $outfile, $help, $exclude);
+
+my ($namesfile, $outfile, $help, $exclude, $plot, $files);
+my $summary_dir = 'summary_files';
 GetOptions('outfile=s' => \$outfile,
            'help|h|?' => \$help,
            'names=s' => \$namesfile,
            'exclude' => \$exclude,
-           
+           'plot' => \$plot,
+           'files' => \$files,
+           'summarydir' => \$summary_dir,
            );
 
            
@@ -55,6 +62,7 @@ chdir $startdir;
 opendir( my $startdirh, $startdir);
 foreach my $subdir (    
                         grep {-d "$startdir/$_"} 
+                        grep {$exclude ? $names{$_} : 1}            # only named are read if -e in effect                        
                         readdir $startdirh
                     ) 
 {
@@ -80,8 +88,39 @@ foreach my $subdir (
     foreach my $out (grep {/out$/} readdir $zero_runh) {
         open my $outh, "<", "$subdir/zero/$out";
         push @properties, get_properties($outh, \@par_regexes);
+        $properties[-1]{path} = File::Spec->rel2abs("$subdir/zero/$out");   # to extract later
     }
     $summaries{$subdir} = reduce {abs($a->{rms_delta_d} - 0.01) < abs($b->{rms_delta_d} - 0.01) ? $a : $b} @properties;  #choose point with RMS delta d closest to 0.01 for comparison
+    if ($plot) {
+        my $name = $names{$subdir} || $subdir;
+        
+        mkdir "./toparun_summary_plots" unless -e "./toparun_summary_plots";
+        chdir './toparun_summary_plots';
+        my $plotdir = abs_path('.');
+        (my $inp = $summaries{$subdir}{path}) =~ s/out$/inp/;
+        open my $inph, "<", $inp;
+        open my $ploth, ">", "plot.inp";
+        while (<$inph>) {
+            s/\bstr\b/str\n    Out_Graphs($name.dat)\nCreate_2Th_Ip_file($name.hkli)/;
+            print $ploth $_;
+        }
+        close $inph;
+        close $ploth;
+        chdir "C:\\TOPAS4-2\\";
+        # say qq[tc.exe $plotdir\\plot.inp];
+        system(qq[tc.exe $plotdir\\plot.inp]);
+        # die "TOPAS??\n";
+        chdir $plotdir;
+        system("topasplot $name.dat $name.hkli");
+        system("format_dat_cif.pl $name.dat");
+        rename("topasplot.eps", "$name.eps");
+        chdir $startdir;
+    }
+    if ($files) {
+        mkdir "./$summary_dir" unless -e "./$summary_dir";
+        -d "./$summary_dir" or die "$summary_dir not a directory!\n";
+        cp $summaries{$subdir}{path}, "./$summary_dir/". ($names{$subdir} || $subdir ). '.out';
+    }
     @properties = sort {$a->{rms_delta_d} <=> $b->{rms_delta_d}} @properties;
     $summaries{$subdir}{min_rms_delta_d} = $properties[0]->{rms_delta_d};
     $summaries{$subdir}{max_rms_delta_d} = $properties[-1]->{rms_delta_d};
@@ -107,7 +146,6 @@ my @headers = (@par_list, qw/HUW_mean HUW_sd HUW_nice TI Total_bonds rms_delta_d
 say $summh join "\t", 'Name', @headers;
 say $summh join "\t", $names{$_} || $_, @{$summaries{$_}}{@headers} 
     foreach 
-    grep {$exclude ? $names{$_} : 1}            # only named are read if -e in effect
     sort keys %summaries;
 
 
