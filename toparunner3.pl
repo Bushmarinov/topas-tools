@@ -43,9 +43,9 @@ if ($^O =~ /win32/i) {
 my $help;
 my $keep;
 my $precision = 0.005;
-my $delta = 0.2;
-my $multiplier = 2;
-my $nextgen;
+my $delta = 0.4;
+my $multiplier = 8;
+my $nextgen = 0;
 GetOptions( "help|?" => \$help, 
             "keep" => \$keep,
             "precision=f" => \$precision,
@@ -55,11 +55,12 @@ GetOptions( "help|?" => \$help,
             "nextgen|X" => \$nextgen,
 );
 
+$nextgen = !$nextgen;
+
 die <<HELP if $help or !@ARGV;
 Usage: toparunner3.pl [options] <inpfile>
 
-Performs a search for optimal values of all bond restraints
-in inpfile using restraint stabilization.
+Evaluates the HUW value for a restraint-consistent structure.
 
 Options:
    --help, -h, ?
@@ -67,20 +68,18 @@ Options:
    --keep, -k
      do not delete toparun files adter running (space-consuming!)
    --precision
-     expected error (A) on finding the bond stability range
-     (default 0.005)
+     precision of HUW determination (A) 
    --delta
-     starting delta (A) for searching bond stability range
-     assuming that it outlies up there (default 0.2).
+     maximum expected HUW (A) (default 0.4).
    --number-of-cpus
      number of CPUs ("cores") to use. By default all available,
      but with IDLE priority, so no worry.
    --multiplier, -m
      factor to multiply toparun default steps "1,0.25".
-     Default 2.0
-   --nextgen, -X
-     use "next generation" IQR multiplier
+     Default 8.0
 HELP
+
+
 
 say "I have $ncpu cores";
 
