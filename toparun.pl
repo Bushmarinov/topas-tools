@@ -178,6 +178,14 @@ sub change_k1 {
 	while (<$fromh>) {
 		s/(penalties_weighting_K1\s+)[\d.]+/$1$k1/;
 		s/[\d.]*(\.cif)/sprintf('%.4g', $k1).$1/eg;
+        s{(Out_CIF_IUCR\([^)]+?)
+            [\d.]*
+            \s*\)}
+        {
+            my ($before, $k1_f) = ($1, sprintf('%.4g', $k1));
+            $k1_f =~ tr/./_/;
+            $before.$k1_f.")";
+        }xeg;
 		$result .= $_ unless /C_matrix_normalized/../}/;
 	}
 	open my $toh, '>', $to;
