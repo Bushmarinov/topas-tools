@@ -4,14 +4,15 @@
 # 1.04 rotation vector
 #1.05 breakable
 #1.06 free RB
+#1.08 loaded atoms
 
 package Chemistry::File::STR;
 use base qw(Chemistry::File);
 use warnings;
 use strict;
 
-our $VERSION = 1.07;
-
+our $VERSION = 1.08;
+our $loaded_atoms = 1;
 use Carp;
 use Math::Trig;
 
@@ -36,8 +37,9 @@ sub write_mol {
     $mol->isa("Chemistry::Crystal") or croak "Cannot print non-crystal as STR!\n";
     print $fh topas_header($mol); 
     foreach my $atom ($mol->atoms) {
-        print $fh topas_atom($atom);
+        print $fh $loaded_atoms ? topas_loaded_atom($atom) : topas_atom($atom);
     }    
+    print $fh "${W}}\n" if $loaded_atoms;
     #process restraints
     print $fh "\n${W}'Bond restraints\n";
     my %bond_by_type;
@@ -161,6 +163,7 @@ HEADER
 		$string .= "${W}prm =beq$_/(8*Pi^2); : 0.05\n";
 	}
 	$string .= "\n";
+    $string .= "${W}load site num_posns x y z occ beq {\n" if $loaded_atoms;
 	return $string;
 	
 }
@@ -178,6 +181,15 @@ sub topas_atom {
     my ($atom) = @_;
     croak "No fractional coordinates in atom $atom" unless $atom->attr('crystal/fract_coords');
     my $fmt= "        site %-4s num_posns 0 x \@ % .5f y \@ % .5f z \@ % .5f occ %s %.3f beq %s\n";
+    $fmt =~ s/\@/ /g if $atom->attr('topas/norefine');
+    return sprintf $fmt, $atom->name, $atom->attr('crystal/fract_coords')->array, $atom->symbol, 
+                          $atom->attr('crystal/occupancy'), "=beq".lc($atom->symbol).";";
+}
+
+sub topas_loaded_atom {
+    my ($atom) = @_;
+    croak "No fractional coordinates in atom $atom" unless $atom->attr('crystal/fract_coords');
+    my $fmt= "${W}    %-4s 0 \@ % .5f \@ % .5f \@ % .5f %s %.3f %s\n";
     $fmt =~ s/\@/ /g if $atom->attr('topas/norefine');
     return sprintf $fmt, $atom->name, $atom->attr('crystal/fract_coords')->array, $atom->symbol, 
                           $atom->attr('crystal/occupancy'), "=beq".lc($atom->symbol).";";

@@ -371,6 +371,5 @@ sub cart2frac {
 	return $vec * $mol->cell_matrix->inverse;
 }
 
-
 1;
 
