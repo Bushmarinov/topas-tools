@@ -99,9 +99,11 @@ sub write_mol {
           Rotate_about_axies(@  4.33057`, @  1.93286`, @ -2.51469`)
           Translate(@ -0.03452`, @  0.03983`, @  0.01914`)
 =cut
-    my $rb_rot_limits = 'min -1 max 1';
+    my $rb_rot_limits = '';
+    my $ref_H = '';
 	if ($opts{free_rigid_bodies}) {
 		$rb_rot_limits = '';
+        $ref_H = '@';
 	}
 	
     foreach my $rigid ($mol->rigid_bodies) {                        #write rigids in Cartesian: we have these anyway
@@ -117,7 +119,7 @@ sub write_mol {
         if ($rigid->{rotation_vector}) {
             printf $fh "${W} rotate @ 0 qx %8.5f qy %8.5f qz %8.5f\n", $rigid->{rotation_vector}->array;
         }
-        printf $fh "${W}Rotate_about_axies(@  %8.5f $rb_rot_limits, @  %8.5f $rb_rot_limits, @ %8.5f $rb_rot_limits)\n", $rigid->{rotate}->array;
+        printf $fh "${W}Rotate_about_axies($ref_H  %8.5f $rb_rot_limits, $ref_H  %8.5f $rb_rot_limits, $ref_H %8.5f $rb_rot_limits)\n", $rigid->{rotate}->array;
         printf $fh "${W}Translate(@  %8.5f, @  %8.5f, @ %8.5f)\n", ($rigid->{translate} + $rigid->{shift_origin})->array;
         print $fh "\n";
     }

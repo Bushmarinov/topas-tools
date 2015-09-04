@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+#v 1.12 deprecated Morse and Breakable restraints; better TOPAS5 compatibility
 #v 1.11 Distangle restraints
 #v 1.10 MOGUL input
 #v 1.09 free RB
@@ -56,10 +57,6 @@ MOGUL templates override molecular ones.
 TSVs can be created by Mogul->Load CIF->All Fragments->Export.
 
 Options:
- --morse, -m     
-    force use of Morse restraints (deprecated)
- --parabolic, -p 
-    print additional file with parabolic restraints
  --restrain-hydrogens, -r
     add restraints for hydrogens in addition to rigid bodies
 	(also removes limits on RB rotation if used; use with care on OH)
@@ -82,8 +79,8 @@ my @templates = @ARGV;
 
 #print "Scale cutoff: $scale_cutoff\n";
 die $usage unless $gotopt;
-(my $output = $input) =~ s/(\.cif)?$/_mol.str/;
-(my $output_par = $input) =~ s/(\.cif)?$/_mol_parab.str/;
+#(my $output = $input) =~ s/(\.cif)?$/_mol.str/;
+(my $output_par = $input) =~ s/(\.cif)?$/_parab.str/;
 open my $logh, ">str_gen.log" or die "Cannot open file str_gen.log for writing: $!\n";
 my @molecules = Chemistry::Crystal->read($input);
 #print "Read successful\n";
@@ -216,15 +213,15 @@ foreach my $tablefile (@mogul_templates) {
     }
 }
 
-if ($use_morse) {
-	$mol->write($output, free_rigid_bodies => $restrain_hydrogens);
-} else {
-	$mol->write($output, breakable => 1, free_rigid_bodies => $restrain_hydrogens);
-}
-$mol->write($output_par, parabolic => 1, free_rigid_bodies => $restrain_hydrogens) if $write_parabolic;
+# if ($use_morse) {
+	# $mol->write($output, free_rigid_bodies => $restrain_hydrogens);
+# } else {
+	# $mol->write($output, breakable => 1, free_rigid_bodies => $restrain_hydrogens);
+# }
+$mol->write($output_par, parabolic => 1, free_rigid_bodies => $restrain_hydrogens); # if $write_parabolic;
 
-printf "Structure with %s restraints output to $output\n", $use_morse ? 'Morse' : 'breakable';
-print "Structure with parabolic restraints output to $output_par\n" if $write_parabolic;
+# printf "Structure with %s restraints output to $output\n", $use_morse ? 'Morse' : 'breakable';
+print "Structure with parabolic restraints output to $output_par\n"; # if $write_parabolic;
 
 
 
