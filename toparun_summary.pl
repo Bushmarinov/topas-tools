@@ -28,11 +28,14 @@ GetOptions('outfile=s' => \$outfile,
 
            
 die <<HELP if $help;
-Usage: toparun_summary.pl [-o outfile] [-n names.yml] [-x]
+Usage: toparun_summary.pl [-o outfile] [-n names.yml] [-e]
 
--n renames the folders in the resulting table 
+-n renames the columns in the resulting table 
 according to the provided hashref YAML file.
 -e excludes non-named entries
+-p plots difference curves
+-f generates plotfiles and outs closest to 0.01 r.m.s. \Delta d
+-s defines custom summary dir
 HELP
 my %names;
 if ($namesfile) {
