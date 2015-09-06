@@ -23,20 +23,17 @@ my $nextgen;
 GetOptions( "points=s", \@points,
             "stepsizes=s", \@stepsizes,
 			"clever", \$clever,
-            "nextgen|X" => \$nextgen,
-			"limit=i", => \$limit,
-			"force", \$force);
-
-if (!$force and $^O =~ /Win32/ ) {		
-    require Win32;
-    Win32::GetSystemMetrics(0x1000) #SM_REMOTESESSION
-       and die "You are in the remote session! Use TightVNC or --force to run TOPAS!\n";
-} 
+            "nextgen|X" => \$nextgen,   #deprecated
+			"limit=i", => \$limit,      #deprecated
+            "force" => \$force,
+            );
+$nextgen = 1;
+$force=1;
 			
 @points = map {split /,/} @points;
 @stepsizes = map {split /,/} @stepsizes;
 @points = qw/100 15 0.25/ unless @points;
-@stepsizes = qw/1 0.25/ unless @stepsizes;
+@stepsizes = qw/4 1/ unless @stepsizes;
 			
 unless (scalar @points == 1+@stepsizes) {
 	my $points = scalar @points;
@@ -60,13 +57,11 @@ Options:
 	 Default: 100,15,0.25
    --stepsizes, -s
      Self-explanatory. Must be one POSITIVE stepsize for each range.
-	 Default: 1,0.25
+	 Default: 4,1
    --clever, -c 
      Stop after finding %limit% outlying K1 points.
    --limit, -l
      Limit for --clever. Default 15.
-   --force, -f
-	 Allows running from RDP session
 USAGE
 
 my $filename = shift @ARGV;
