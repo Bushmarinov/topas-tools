@@ -141,7 +141,7 @@ foreach my $k1 (@steps) {
 		$stats->add_data(map {$_->{error}} @$restraints);
 		my $IQR = $stats->quantile(3) - $stats->quantile(1);
         my @outliers;
-        my $multiplier = $nextgen ? $fencevals{$stats->count()} : 1.5;
+        my $multiplier = $nextgen ? $fencevals{$stats->count()} || 2.3 : 1.5;
         
         my $lower_fence = $stats->quantile(1) - $multiplier*$IQR;
         my $upper_fence = $stats->quantile(3) + $multiplier*$IQR;

@@ -181,6 +181,7 @@ sub read_restraints {        #generates a @AoH of {name, ideal, real} from fileh
     my $handle = shift;
     my @bondlist;
     while (<$handle>) {
+        s/'.*//;
         if (m{Distance_Restrain\w*\s*\(
                  \s* ([^,]+?)        #name
                  \s*,\s*
