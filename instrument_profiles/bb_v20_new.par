@@ -1,0 +1,16 @@
+
+	Rp 300
+	Rs 300
+	lpsd_th2_angular_range_degrees  2.5
+		lpsd_equitorial_divergence_degrees  3
+		lpsd_equitorial_sample_length_mm @ 20.10880372
+			lpsd_beam_spill_correct_intensity 1
+	Tube_Tails(, 0.2071818052,, -1.366340463,, 1.458321806,, 0.002053359523)
+	axial_conv 
+		filament_length  16
+		sample_length @ 22.38411744_LIMIT_MIN_9 min =9;
+		receiving_slit_length  17
+		primary_soller_angle  2.4
+		secondary_soller_angle  2.5
+		axial_n_beta  30
+	Zero_Error(,0.01898903)
