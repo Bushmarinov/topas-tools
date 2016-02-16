@@ -44,6 +44,7 @@ foreach my $file (@files) {
 			push @matrices, \@cell_matrix;
 		}
 		next if /AFIX/i;
+        next if /^\s*H\d+/;
 		if (/^([A-Za-z]{1,2})(?![A-Za-z])\w* \s+ \d+ \s+ ((?:[-0-9.]+\s+){3})/xi) {
 			(my $el_symbol, $el_coord) = ($1, $2);
 			$el_num = get_Z($el_symbol);	
