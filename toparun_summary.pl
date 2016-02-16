@@ -10,8 +10,8 @@ use Cwd 'abs_path';
 use YAML;
 use Getopt::Long;
 use File::Spec;
-my $tc = $ENV{TOPAS_COMMANDLINE} || 'C:\Topas4-2\tc.exe';
-my $topasdir = $ENV{TOPAS_DIR} || 'C:\Topas4-2';
+my $tc = $ENV{TOPAS_COMMANDLINE} || 'C:\Topas5\tc.exe';
+my $topasdir = $ENV{TOPAS_DIR} || 'C:\Topas5';
 
 
 
