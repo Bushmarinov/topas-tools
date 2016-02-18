@@ -218,6 +218,11 @@ macro Foil_ThicknessAbsIgauss(ct, thick, ca, abs)
 }
 
 
+macro Out_CIF_IUCR(namme) {
+	macro Outname() { namme }
+	Out_CIF_IUCR(Outname().cif, namme)
+}
+
 macro Out_CIF_IUCR(file, myname)
 {
    out file
@@ -352,9 +357,9 @@ PLATON (Spek, 2003)
 Out_String("\n#Beware: these are values as defined by start_X and finish_X.\n# Real measurerement range may differ")
 load out_record out_fmt out_eqn {
 "\n_pd_meas_number_of_points %.0f" =(X2-X1)/Peak_Calculation_Step+1;
-"\n_pd_meas_2theta_range_min  %.6f" =X1;
-"\n_pd_meas_2theta_range_max %.6f" =X2;
-"\n_pd_meas_2theta_range_inc %.6f" = Peak_Calculation_Step;
+"\n_pd_meas_2theta_range_min  %.8f" =X1;
+"\n_pd_meas_2theta_range_max %.8f" =X2;
+"\n_pd_meas_2theta_range_inc %.8f" = Peak_Calculation_Step;
 }
 	  
 	  Out_String("
