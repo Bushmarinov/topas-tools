@@ -3,12 +3,12 @@
 	Rs 217.5
 	axial_conv 
 		filament_length  16
-		sample_length !sample_len 4_LIMIT_MIN_3 min =3; max =16;
+		sample_length sample_len 3.026052828_LIMIT_MIN_3 min =3; max =16;
 		receiving_slit_length  17_LIMIT_MIN_0.0001
-		secondary_soller_angle !secsoll 2.5
+		secondary_soller_angle secsoll 2.67996605 min =2.4; max =2.9;
 		axial_n_beta  10
 	Cylindrical_2Th_Correction(!sab, -0.1062189326)
-		User_Defined_Dependence_Convolution(gauss_fwhm,  1/Cos(Th)   , !broadg, 0.026922777)
-		User_Defined_Dependence_Convolution(gauss_fwhm,  Tan(Th)   , thick, 0.01667101532)
-	LP_Factor( 27.3)
-    Zero_Error(!ze, -0.001617483305 min =-0.02; max =0.02;)
+		User_Defined_Dependence_Convolution(gauss_fwhm,  Tan(Th)   , thick, 0.01358515064_LIMIT_MIN_0.0001)
+		LP_Factor( 27.3)
+    Zero_Error(ze, -0.001617483305 min =-0.01; max =0.01;)	
+	
