@@ -464,3 +464,20 @@ Out(Peak_Calculation_Step, "\n_pd_proc_2theta_range_inc %.6f")
 				' out_fmt " %2.5f"
 			
 }
+
+macro Toraya_Weighting(toraya_e) {
+	weighting = 1 / (SigmaYobs^2*Yobs^(toraya_e-1));
+}
+
+macro Out_Graphs_Weight(file)
+{
+   xdd_out file load out_record out_fmt out_eqn
+   {
+	" %11.9f  " = X;       
+	" %11.9f  " = Yobs;
+       " %11.9f  " = Ycalc;
+       " %11.9f  " = Yobs-Ycalc;
+	   " %11.9f " = Get(weighting);
+	   " %11.9f\n" = SigmaYobs;
+	     }
+}
