@@ -1,0 +1,25 @@
+	lam
+		ymin_on_ymax  0.0001
+		la  0.0159 lo  1.534753 lh  3.6854
+		la  0.5791 lo  1.540596 lh  0.437
+		la  0.0762 lo  1.541058 lh  0.6
+		la  0.2417 lo  1.54441 lh  0.52
+		la  0.0871 lo  1.544721 lh  0.62
+		la  0.001463123276_LIMIT_MIN_1e-005 lo  1.392216 lh  0.4346023695_LIMIT_MIN_0.001
+	Rp 300
+	Rs 300
+	lpsd_th2_angular_range_degrees  2.5
+		lpsd_equitorial_divergence_degrees  3
+		lpsd_equitorial_sample_length_mm @ 20.52014771 min 9 max 21
+			lpsd_beam_spill_correct_intensity 1
+	Tube_Tails(!sw, 0.09575777799,!z1, -1.407526948,!z2, 1.474324841,!tt_frac, 0.001094930553_LIMIT_MIN_1e-005)
+	LP_Factor( 0)
+	Zero_Error(!ze, 0)
+	Specimen_Displacement(@, 0 min =-0.15; max =0.1;)
+	axial_conv 
+		filament_length  16
+		sample_length  33.07179723_LIMIT_MIN_9 min =9; max 34
+		receiving_slit_length  17
+		primary_soller_angle  2.4
+		secondary_soller_angle  2.5
+		axial_n_beta  30
