@@ -1,0 +1,113 @@
+<Title>
+ <:$title:>
+</Title>
+<Keywords>
+ GTO
+</Keywords>
+<Number of Nuclei>
+ <: $atoms | count :>
+</Number of Nuclei>
+<Number of Occupied Molecular Orbitals>
+ <: $MOs | count :>
+</Number of Occupied Molecular Orbitals>
+<Number of Perturbations>
+ <: $perturbations || 0:>
+</Number of Perturbations>
+<Net Charge>
+ <: $charge  | formint :>
+</Net Charge>
+<Number of Electrons>
+ <: $electrons :>
+</Number of Electrons>
+<Number of Alpha Electrons>
+ <: $alpha :>
+</Number of Alpha Electrons>
+<Number of Beta Electrons>
+ <: $beta :>
+</Number of Beta Electrons>
+<Electronic Spin Multiplicity>
+ <: $multiplicity || 1 :>
+</Electronic Spin Multiplicity>
+<Number of Core Electrons>
+ <: $core || 0 :>
+</Number of Core Electrons>
+<Nuclear Names>
+: for $atoms -> $atom {
+ <:$atom.symbol ~ $atom.id :>
+: }
+</Nuclear Names>
+<Atomic Numbers>
+: for $atoms -> $atom {
+ <:$atom.charge | formint :>
+: }
+</Atomic Numbers>
+<Nuclear Charges>
+: for $atoms -> $atom {
+ <: formexp($atom.charge) :>
+: }
+</Nuclear Charges>
+<Nuclear Cartesian Coordinates>
+: for $atoms -> $atom {
+ <: $atom.coords | formexp :>
+: }
+</Nuclear Cartesian Coordinates>
+<Number of Primitives>
+ <: $exponents | count :>
+</Number of Primitives>
+<Primitive Centers>
+<: $centers | formint | wrap :>
+</Primitive Centers>
+<Primitive Types>
+<: $types | formint | wrap :>
+</Primitive Types>
+<Primitive Exponents>
+<: $exponents | formexp | wrap :>
+</Primitive Exponents>
+<Molecular Orbital Occupation Numbers>
+: for $MOs -> $orbital {
+ <: $orbital.occupancy | formexp :>
+:}
+</Molecular Orbital Occupation Numbers>
+<Molecular Orbital Energies>
+: for $MOs -> $orbital {
+ <: $orbital.energy | formexp :>
+:}
+</Molecular Orbital Energies>
+<Molecular Orbital Spin Types>
+: for $MOs -> $orbital {
+ Alpha and Beta
+:}
+</Molecular Orbital Spin Types>
+<Molecular Orbital Primitive Coefficients>
+: for $MOs -> $orbital {
+<MO Number>
+ <: $orbital.number :>
+</MO Number>
+<: $orbital.coefs | formexp | wrap :>
+: }
+</Molecular Orbital Primitive Coefficients>
+<Energy = T + Vne + Vee + Vnn>
+ <: $energy | formexp :>
+</Energy = T + Vne + Vee + Vnn>
+<Virial Ratio (-V/T)>
+ <: $virial | formexp :>
+</Virial Ratio (-V/T)>
+: if $EDF_centers[0] {
+<Additional Electron Density Function (EDF)>
+ <Number of EDF Primitives>
+ <: $EDF_centers | count :>
+ </Number of EDF Primitives>
+ <EDF Primitive Centers>
+   <: $EDF_centers | formint | wrap :> 
+ </EDF Primitive Centers>
+ <EDF Primitive Types>
+ <: wrap('1 ' x count($EDF_centers)) :>
+ </EDF Primitive Types>
+ <EDF Primitive Exponents>
+ <: $EDF_exponents | formexp | wrap :>
+ </EDF Primitive Exponents>
+ <EDF Primitive Coefficients>
+ <: $EDF_coefs | formexp | wrap :>
+ </EDF Primitive Coefficients>
+</Additional Electron Density Function (EDF)>
+: }
