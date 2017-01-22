@@ -162,7 +162,7 @@ foreach my $k1 (@steps) {
 	
 	seek $currenth, 0, 0;
 	change_k1($currenth, "$file_base$k1.inp", $k1);
-	system("$tc $file_base$k1");
+	system(qq($tc "$file_base$k1"));
 	$current_file = "$file_base$k1.out";
 }
 chdir $cwd;
