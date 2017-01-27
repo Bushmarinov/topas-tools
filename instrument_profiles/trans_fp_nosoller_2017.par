@@ -1,0 +1,18 @@
+
+	lam
+      ymin_on_ymax  0.0001
+      la  1 lo  1.540596 lh  0.2057324
+
+	Rp 217.5
+	Rs 217.5
+	axial_conv 
+		filament_length  16
+		sample_length sample_len 6.174548965 min =3; max =16;
+		receiving_slit_length  17_LIMIT_MIN_0.0001
+		primary_soller_angle mono_asymm 19.99999985_LIMIT_MIN_5 min =5; max =20;
+		secondary_soller_angle  2.5
+		axial_n_beta  10
+	Zero_Error( 0.004 min =-0.01; max =0.01;)
+	Cylindrical_2Th_Correction(!sab, -0.11)
+		User_Defined_Dependence_Convolution(gauss_fwhm,  Tan(Th)    , thick, 0.03901922726 min =0.03; max =0.2;)
+		User_Defined_Dependence_Convolution(gauss_fwhm, 1/Cos(Th), !gaussconv, 0.021)
