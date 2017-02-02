@@ -76,6 +76,7 @@ while (<$inputh>) {
 			$el_num = 999;
 		}
         my $newcoord = join " ", map {sprintf '%.5f', $_} 
+                                map {confine_to_cell($_) }
                                 map {$_ > 9 ? $_-10 : $_} 
                                 split " ", $el_coord;       # fix an OLEX2 error of assigning "constant" coods
         s/\Q$el_coord\E/$newcoord/;
@@ -135,4 +136,15 @@ sub shrinkspaces {				#collapse all empty strings in an array to one
 		push @result, $line;
 	}
 	return @result;
+}
+
+sub confine_to_cell {
+    my $x = shift;
+    while ($x > 1) {
+        $x -= 1;
+    }
+    while ($x <= 0) {
+        $x += 1;
+    }
+    return $x;
 }
